@@ -65,7 +65,11 @@ function escapeHtml(text) {
 // Ensure all <a> tags open in a new tab with proper security attributes
 function ensureLinksOpenInNewTab(html) {
   if (!html) return "";
-  return html.replace(/<a\b([^>]*?)>/gi, (match, p1) => {
+  const replacedHtml = html.replace(
+    /https?:\/\/mnnb9bbkgu\.ap-south-1\.awsapprunner\.com/gi,
+    "https://sel-nexus.com"
+  );
+  return replacedHtml.replace(/<a\b([^>]*?)>/gi, (match, p1) => {
     let attrs = p1;
     if (!/target=/i.test(attrs)) {
       attrs += ' target="_blank"';
@@ -97,7 +101,11 @@ function parseFormattedText(text) {
     } else if (part.startsWith('[') && part.includes('](') && part.endsWith(')')) {
       const closeBracketIndex = part.indexOf('](');
       const linkText = part.slice(1, closeBracketIndex);
-      const url = part.slice(closeBracketIndex + 2, -1);
+      const rawUrl = part.slice(closeBracketIndex + 2, -1);
+      const url = rawUrl.replace(
+        /https?:\/\/mnnb9bbkgu\.ap-south-1\.awsapprunner\.com/gi,
+        "https://sel-nexus.com"
+      );
       children.push(new ExternalHyperlink({
         children: [
           new TextRun({
@@ -129,7 +137,7 @@ export async function downloadDocxFile(text, filename = "Product_Requirement_Doc
     .replace(/### 📥 Document Download[\s\S]*?(\n\n|$)/gi, "")
     .replace(/\[📥 Download PRD \(\.docx\)\]\(#download-prd\)/gi, "")
     .replace(/### 🚀 Automation Pipeline[\s\S]*?(\n\n|$)/gi, "")
-    .replace(/.*https:\/\/mnnb9bbkgu\.ap-south-1\.awsapprunner\.com\/agents\/automation.*/gi, "");
+    .replace(/.*https:\/\/(?:sel-nexus\.com|mnnb9bbkgu\.ap-south-1\.awsapprunner\.com)\/agents\/automation.*/gi, "");
 
   const lines = cleanText.split("\n");
   const docChildren = [];
@@ -341,7 +349,7 @@ function formatMarkdownText(text) {
     .replace(/### 📥 Document Download/gi, "")
     .replace(/\[📥 Download PRD \(\.docx\)\]\(#download-prd\)/gi, "")
     .replace(/### 🚀 Automation Pipeline/gi, "")
-    .replace(/.*https:\/\/mnnb9bbkgu\.ap-south-1\.awsapprunner\.com\/agents\/automation.*/gi, "");
+    .replace(/.*https:\/\/(?:sel-nexus\.com|mnnb9bbkgu\.ap-south-1\.awsapprunner\.com)\/agents\/automation.*/gi, "");
 
   // If marked.js is available on window, use it
   if (typeof window !== "undefined" && window.marked && typeof window.marked.parse === "function") {
@@ -679,7 +687,7 @@ export function Chatbot({ hideFloat, autoPrompt, defaultOpen = false }) {
                         <div style={{ fontSize: "13px", color: "#94a3b8", marginTop: "4px", lineHeight: "1.5" }}>
                           Switch to the{" "}
                           <a
-                            href="https://mnnb9bbkgu.ap-south-1.awsapprunner.com/agents/automation"
+                            href="https://sel-nexus.com/agents/automation"
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ color: "#38bdf8", textDecoration: "underline", fontWeight: "600" }}

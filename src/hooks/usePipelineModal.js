@@ -160,15 +160,20 @@ export function usePipelineModal({
     try {
       const pipeline = await startAutomationPipeline(file, trimmedName);
 
+      const trackingLink = (pipeline.tracking_link || "").replace(
+        /https?:\/\/mnnb9bbkgu\.ap-south-1\.awsapprunner\.com/gi,
+        "https://sel-nexus.com"
+      );
+
       setResult({
         name: pipeline.name || trimmedName,
         taskId: pipeline.task_id || "",
-        trackingLink: pipeline.tracking_link || "",
+        trackingLink: trackingLink,
       });
       setStatus(null);
 
-      if (pipeline.tracking_link) {
-        window.open(pipeline.tracking_link, "_blank", "noopener,noreferrer");
+      if (trackingLink) {
+        window.open(trackingLink, "_blank", "noopener,noreferrer");
       }
       onStarted?.(pipeline);
     } catch (err) {

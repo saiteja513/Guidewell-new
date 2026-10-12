@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // GuideWell automation agents
       '/api/automation-agents': {
-        target: 'https://mnnb9bbkgu.ap-south-1.awsapprunner.com',
+        target: 'https://sel-nexus.com',
         changeOrigin: true,
       },
     },

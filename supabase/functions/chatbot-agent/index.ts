@@ -625,7 +625,7 @@ At the very end of your PRD response, you MUST append a download and execution s
 [📥 Download PRD (.docx)](#download-prd)
 
 ### 🚀 Automation Pipeline
-You can execute this PRD's features via the SEL Nexus Automation Pipeline at this link: https://mnnb9bbkgu.ap-south-1.awsapprunner.com/agents/automation`;
+You can execute this PRD's features via the SEL Nexus Automation Pipeline at this link: https://sel-nexus.com/agents/automation`;
       }
 
       if (!wasJiraCreated) {
