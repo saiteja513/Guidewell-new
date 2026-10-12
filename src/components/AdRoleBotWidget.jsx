@@ -121,6 +121,12 @@ function toGeminiHistory(messages) {
  */
 export function AdRoleBotWidget({ selectedRole, data, onOpenChange, hideFloat = false }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   const toggleOpen = (state) => {
     setIsOpen(state);
@@ -143,12 +149,6 @@ export function AdRoleBotWidget({ selectedRole, data, onOpenChange, hideFloat = 
     setInput("");
     setError(null);
   };
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
 
   // Load marked.js for markdown rendering AND chatbot.css for styles
   useEffect(() => {

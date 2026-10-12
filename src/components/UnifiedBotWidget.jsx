@@ -133,6 +133,13 @@ function toGeminiHistory(messages) {
  */
 export function UnifiedBotWidget({ selectedRole, data, domain, onOpenChange, hideFloat = false }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+  const backendSessionIdRef = useRef("unified-session");
 
   const toggleOpen = (state) => {
     setIsOpen(state);
@@ -156,12 +163,6 @@ export function UnifiedBotWidget({ selectedRole, data, domain, onOpenChange, hid
     setError(null);
     backendSessionIdRef.current = "unified-session-" + Date.now();
   };
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
 
   // Load marked.js for markdown rendering AND chatbot.css for styles
   useEffect(() => {
@@ -249,8 +250,6 @@ export function UnifiedBotWidget({ selectedRole, data, domain, onOpenChange, hid
     }
   };
 
-  // Persistent backend session ID for this chat window instance
-  const backendSessionIdRef = useRef("unified-session-" + Date.now());
 
   const callBackendAgent = async (messageText) => {
     const DEFAULT_API_URL =
