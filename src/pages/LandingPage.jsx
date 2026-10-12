@@ -652,6 +652,32 @@ export default function LandingPage() {
   // Applications Dropdown Menu States
   const [appDropdownOpen, setAppDropdownOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
+  const appDropdownCloseTimerRef = useRef(null);
+
+  const handleAppDropdownMouseEnter = () => {
+    if (appDropdownCloseTimerRef.current) {
+      clearTimeout(appDropdownCloseTimerRef.current);
+      appDropdownCloseTimerRef.current = null;
+    }
+    setAppDropdownOpen(true);
+  };
+
+  const handleAppDropdownMouseLeave = () => {
+    if (appDropdownCloseTimerRef.current) {
+      clearTimeout(appDropdownCloseTimerRef.current);
+    }
+    appDropdownCloseTimerRef.current = setTimeout(() => {
+      setAppDropdownOpen(false);
+    }, 220); // 220ms grace delay
+  };
+
+  useEffect(() => {
+    return () => {
+      if (appDropdownCloseTimerRef.current) {
+        clearTimeout(appDropdownCloseTimerRef.current);
+      }
+    };
+  }, []);
 
   // Applications Data & Dropdown Setup
   const DEFAULT_APP = { id: "bspoke", name: "BSpoke Application", category: "Custom AD", key: "BSPOKE" };
@@ -1705,79 +1731,93 @@ export default function LandingPage() {
                   <div
                     key={tab.id}
                     style={{ position: "relative", display: "inline-block" }}
-                    onMouseEnter={() => setAppDropdownOpen(true)}
-                    onMouseLeave={() => setAppDropdownOpen(false)}
+                    onMouseEnter={handleAppDropdownMouseEnter}
+                    onMouseLeave={handleAppDropdownMouseLeave}
                   >
                     <span
                       className="re-tab"
-                      onClick={() => setAppDropdownOpen(!appDropdownOpen)}
+                      onClick={() => {
+                        if (appDropdownCloseTimerRef.current) {
+                          clearTimeout(appDropdownCloseTimerRef.current);
+                        }
+                        setAppDropdownOpen((prev) => !prev);
+                      }}
                       role="button"
                       tabIndex={0}
                       style={{ display: "inline-flex", alignItems: "center", gap: "6px", cursor: "pointer" }}
                     >
                       Applications
                       {tab.badge && <span className="re-badge">{tab.badge}</span>}
-                      <span style={{ fontSize: "10px", marginLeft: "2px" }}></span>
                     </span>
 
-                    {/* Applications Dropdown Menu */}
+                    {/* Applications Dropdown Menu with Zero-Gap Hover Bridge */}
                     {appDropdownOpen && (
                       <div
+                        onMouseEnter={handleAppDropdownMouseEnter}
+                        onMouseLeave={handleAppDropdownMouseLeave}
                         style={{
                           position: "absolute",
                           top: "100%",
                           right: 0,
-                          marginTop: "6px",
-                          width: "290px",
-                          background: "#0f172a",
-                          border: "1px solid #334155",
-                          borderRadius: "10px",
-                          boxShadow: "0 15px 30px -5px rgba(0, 0, 0, 0.6)",
+                          paddingTop: "6px", // Zero-gap invisible hover bridge (connects trigger button to menu seamlessly)
                           zIndex: 1000,
-                          overflow: "hidden",
-                          padding: "6px",
-                          animation: "fadeIn 0.15s ease",
                         }}
                       >
-                        <div style={{ padding: "6px 10px 8px 10px", fontSize: "11px", fontWeight: "700", color: "#94a3b8", borderBottom: "1px solid #1e293b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                          Switch Application ({DROPDOWN_APPLICATIONS.length})
-                        </div>
-                        {DROPDOWN_APPLICATIONS.map((app, idx) => (
-                          <div
-                            key={app.id || idx}
-                            onClick={() => {
-                              setSelectedApp(app);
-                              setAppDropdownOpen(false);
-                              handleTabClick("epics");
-                              showToast(`Loaded Epics, User Stories & Acceptance Criteria for ${app.name}`, "info");
-                            }}
-                            style={{
-                              padding: "8px 10px",
-                              fontSize: "12px",
-                              fontWeight: "600",
-                              color: selectedApp?.name === app.name ? "#38bdf8" : "#f1f5f9",
-                              borderRadius: "6px",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              transition: "all 0.15s ease",
-                              background: selectedApp?.name === app.name ? "rgba(56, 189, 248, 0.12)" : "transparent",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = selectedApp?.name === app.name ? "rgba(56, 189, 248, 0.12)" : "transparent";
-                            }}
-                          >
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                              <span style={{ fontSize: "11px", color: "#0891b2", fontWeight: "700" }}>{idx + 1}.</span>
-                              <span>{app.name}</span>
-                            </div>
-                            <span style={{ fontSize: "10px", color: "#64748b" }}>{app.category}</span>
+                        <div
+                          style={{
+                            width: "290px",
+                            background: "#0f172a",
+                            border: "1px solid #334155",
+                            borderRadius: "10px",
+                            boxShadow: "0 15px 30px -5px rgba(0, 0, 0, 0.6)",
+                            overflow: "hidden",
+                            padding: "6px",
+                            animation: "fadeIn 0.15s ease",
+                          }}
+                        >
+                          <div style={{ padding: "6px 10px 8px 10px", fontSize: "11px", fontWeight: "700", color: "#94a3b8", borderBottom: "1px solid #1e293b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                            Switch Application ({DROPDOWN_APPLICATIONS.length})
                           </div>
-                        ))}
+                          {DROPDOWN_APPLICATIONS.map((app, idx) => (
+                            <div
+                              key={app.id || idx}
+                              onClick={() => {
+                                if (appDropdownCloseTimerRef.current) {
+                                  clearTimeout(appDropdownCloseTimerRef.current);
+                                }
+                                setSelectedApp(app);
+                                setAppDropdownOpen(false);
+                                handleTabClick("epics");
+                                showToast(`Loaded Epics, User Stories & Acceptance Criteria for ${app.name}`, "info");
+                              }}
+                              style={{
+                                padding: "8px 10px",
+                                fontSize: "12px",
+                                fontWeight: "600",
+                                color: selectedApp?.name === app.name ? "#38bdf8" : "#f1f5f9",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                transition: "all 0.15s ease",
+                                background: selectedApp?.name === app.name ? "rgba(56, 189, 248, 0.12)" : "transparent",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = selectedApp?.name === app.name ? "rgba(56, 189, 248, 0.12)" : "transparent";
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span style={{ fontSize: "11px", color: "#0891b2", fontWeight: "700" }}>{idx + 1}.</span>
+                                <span>{app.name}</span>
+                              </div>
+                              <span style={{ fontSize: "10px", color: "#64748b" }}>{app.category}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
