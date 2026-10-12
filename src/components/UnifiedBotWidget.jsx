@@ -138,6 +138,24 @@ export function UnifiedBotWidget({ selectedRole, data, domain, onOpenChange, hid
     setIsOpen(state);
     onOpenChange?.(state);
   };
+
+  const handleCloseSession = () => {
+    toggleOpen(false);
+    if (selectedRole) {
+      setMessages([
+        {
+          sender: "bot",
+          text: buildWelcomeMessage(selectedRole, data),
+          timestamp: getCurrentTime(),
+        },
+      ]);
+    } else {
+      setMessages([]);
+    }
+    setInput("");
+    setError(null);
+    backendSessionIdRef.current = "unified-session-" + Date.now();
+  };
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -311,16 +329,28 @@ export function UnifiedBotWidget({ selectedRole, data, domain, onOpenChange, hid
                 </div>
               </div>
             </div>
-            <button
-              className="ad-bot-close-btn"
-              onClick={() => toggleOpen(false)}
-              title="Minimize"
-              aria-label="Minimize assistant"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.5 12h-15" />
-              </svg>
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <button
+                className="ad-bot-close-btn"
+                onClick={() => toggleOpen(false)}
+                title="Minimize"
+                aria-label="Minimize assistant"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.5 12h-15" />
+                </svg>
+              </button>
+              <button
+                className="ad-bot-close-btn close-danger"
+                onClick={handleCloseSession}
+                title="Close Session"
+                aria-label="Close assistant and reset session"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Context badge — shows what role/data the bot is grounded to */}

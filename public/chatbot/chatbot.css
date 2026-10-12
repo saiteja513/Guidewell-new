@@ -1188,6 +1188,11 @@ body:has(.modal-overlay) .ad-bot-float {
   color: #ffffff;
 }
 
+.ad-bot-close-btn.close-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
 /* ── Role tabs strip ─────────────────────────────────────── */
 .ad-bot-role-tabs {
   display: flex;
