@@ -67,13 +67,16 @@ export const Modal = ({
     if (!url) return null;
 
     // YouTube video
-    if (url.includes("youtube.com") || url.includes("youtu.be")) {
-      let videoId;
-      if (url.includes("youtube.com/watch?v=")) {
-        videoId = url.split("v=")[1]?.split("&")[0];
-      } else if (url.includes("youtu.be/")) {
-        videoId = url.split("youtu.be/")[1]?.split("?")[0];
-      }
+    try {
+      const parsedUrl = new URL(url);
+      const hostname = parsedUrl.hostname;
+      if (hostname === "youtube.com" || hostname === "www.youtube.com" || hostname === "youtu.be") {
+        let videoId;
+        if (hostname === "youtu.be") {
+          videoId = parsedUrl.pathname.slice(1).split("/")[0];
+        } else {
+          videoId = parsedUrl.searchParams.get("v");
+        }
       return {
         type: "youtube",
         embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : null,
@@ -81,8 +84,8 @@ export const Modal = ({
     }
 
     // Vimeo video
-    if (url.includes("vimeo.com")) {
-      const videoId = url.split("vimeo.com/")[1]?.split("?")[0];
+    if (hostname === "vimeo.com" || hostname === "www.vimeo.com" || hostname.endsWith(".vimeo.com")) {
+      const videoId = parsedUrl.pathname.slice(1).split("/")[0];
       return {
         type: "vimeo",
         embedUrl: videoId ? `https://player.vimeo.com/video/${videoId}` : null,
@@ -90,7 +93,7 @@ export const Modal = ({
     }
 
     // SharePoint/OneDrive video
-    if (url.includes("sharepoint.com") || url.includes("1drv.ms")) {
+    if (hostname === "sharepoint.com" || hostname.endsWith(".sharepoint.com") || hostname === "1drv.ms" || hostname.endsWith(".1drv.ms")) {
       // If URL already has embed parameter, use it directly
       if (url.includes("embed")) {
         return {

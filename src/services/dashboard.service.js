@@ -124,7 +124,7 @@ export const dashboardService = {
       .single();
 
     if (error) {
-      console.error(`Error fetching domain ${slug}:`, error);
+      console.error("Error fetching domain %s:", slug, error);
       throw error;
     }
 
