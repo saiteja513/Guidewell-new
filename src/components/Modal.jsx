@@ -67,13 +67,16 @@ export const Modal = ({
     if (!url) return null;
 
     // YouTube video
-    if (url.includes("youtube.com") || url.includes("youtu.be")) {
-      let videoId;
-      if (url.includes("youtube.com/watch?v=")) {
-        videoId = url.split("v=")[1]?.split("&")[0];
-      } else if (url.includes("youtu.be/")) {
-        videoId = url.split("youtu.be/")[1]?.split("?")[0];
-      }
+    try {
+      const parsedUrl = new URL(url);
+      const hostname = parsedUrl.hostname;
+      if (hostname === "youtube.com" || hostname === "www.youtube.com" || hostname === "youtu.be") {
+        let videoId;
+        if (hostname === "youtu.be") {
+          videoId = parsedUrl.pathname.slice(1).split("/")[0];
+        } else {
+          videoId = parsedUrl.searchParams.get("v");
+        }
       return {
         type: "youtube",
         embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : null,
