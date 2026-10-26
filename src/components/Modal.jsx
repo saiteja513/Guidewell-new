@@ -84,8 +84,8 @@ export const Modal = ({
     }
 
     // Vimeo video
-    if (url.includes("vimeo.com")) {
-      const videoId = url.split("vimeo.com/")[1]?.split("?")[0];
+    if (hostname === "vimeo.com" || hostname === "www.vimeo.com" || hostname.endsWith(".vimeo.com")) {
+      const videoId = parsedUrl.pathname.slice(1).split("/")[0];
       return {
         type: "vimeo",
         embedUrl: videoId ? `https://player.vimeo.com/video/${videoId}` : null,
