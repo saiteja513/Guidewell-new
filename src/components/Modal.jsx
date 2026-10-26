@@ -93,7 +93,7 @@ export const Modal = ({
     }
 
     // SharePoint/OneDrive video
-    if (url.includes("sharepoint.com") || url.includes("1drv.ms")) {
+    if (hostname === "sharepoint.com" || hostname.endsWith(".sharepoint.com") || hostname === "1drv.ms" || hostname.endsWith(".1drv.ms")) {
       // If URL already has embed parameter, use it directly
       if (url.includes("embed")) {
         return {
