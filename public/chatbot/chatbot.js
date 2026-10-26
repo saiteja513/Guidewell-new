@@ -521,8 +521,14 @@ const HorizonChatbot = {
     if (window.crypto && typeof window.crypto.randomUUID === "function") {
       return window.crypto.randomUUID();
     }
+    if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+      const array = new Uint8Array(4);
+      window.crypto.getRandomValues(array);
+      const randomStr = Array.from(array, byte => byte.toString(36)).join("");
+      return "session_" + randomStr + "_" + Date.now();
+    }
 
-    return "session_" + Math.random().toString(36).substring(2, 11) + "_" + Date.now();
+    throw new Error("Cryptographically secure randomness is not available.");
   },
 
   resetConversationState() {
